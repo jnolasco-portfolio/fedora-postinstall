@@ -1,0 +1,19 @@
+# https://www.debugpoint.com/2021/04/gnome-40-extensions/
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
+      include_vars:
+        file: ../vars/application-versions.yaml
+    - name: Install all the packages
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - gnome-tweak-tool
+        - gnome-extensions-app
+        - uget
+
+
+

@@ -1,0 +1,121 @@
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
+      include_vars:
+        file: ../vars/application-versions.yaml
+    - name: Enable Flathub repository
+      become: yes
+      command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    - name: install the rpmfusion repo packages
+      become: yes
+      dnf:      
+        name: "{{ item }}"
+        state: present
+        disable_gpg_check: True
+      with_items:
+        - http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_current }}.noarch.rpm
+        - http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_current }}.noarch.rpm  
+    - name: Install all the packages
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - tilix
+        - tilix-nautilus
+        - openssh
+        - zsh
+        - vim
+        - dkms
+ #       - mesa-utils
+        - curl
+        - gparted
+        - filezilla
+        - git
+        - maven
+        - vlc
+        - youtube-dl 
+        - neovim
+        - ncdu
+#        - syncthing-gtk
+        - transmission
+#        - i965-va-driver
+#        - nfs-common
+        - net-tools
+#        - xz-utils
+#        - lm_sensors
+        - fira-code-fonts
+        - google-roboto-*
+        - 'mozilla-fira*'
+        - adobe-source-code-pro-fonts
+        - cabextract 
+        - papirus-icon-theme 
+        - xorg-x11-font-utils 
+        - fontconfig
+        - htop
+        - keepassxc
+        - dnfdragora
+        - tuned
+        - unar
+    - name: Instalando códecs y compresores
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - gstreamer1-libav 
+        - gstreamer1-plugins-bad-free-extras 
+        - gstreamer1-plugins-bad-freeworld 
+        - gstreamer1-plugins-good-extras 
+        - gstreamer1-plugins-ugly 
+        - unrar 
+        - p7zip 
+        - p7zip-plugins 
+        - gstreamer1-plugin-openh264 
+        - mozilla-openh264 
+        - openh264 
+        - webp-pixbuf-loader 
+        - gstreamer1-plugins-bad-free-fluidsynth 
+        - gstreamer1-plugins-bad-free-wildmidi
+        - gstreamer1-vaapi
+    - name: Renderizacion de videos
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - x264 
+        - h264enc 
+        - x265
+    - name: Configuración gráfica básica de SELinux y el cortafuegos
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - policycoreutils-gui 
+        - firewall-config
+    - name: Instalando snapd
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - snapd      
+    - name: for classic snap support
+      shell:  'ln -s /var/lib/snapd/snap /snap'
+    - name: Poner archivo 95-custom-sysctl.conf para kernel tunning
+      template:
+        src: ../templates/95-sysctl.conf.j2
+        dest: "/etc/sysctl.d/95-custom-sysctl.conf"
+        owner: root
+        group: root
+    - name: Cargar valores de /etc/sysctl.d/95-custom-sysctl.conf
+      become: true
+      shell: "sysctl -p"
+    - name: install Microsoft fonts
+      dnf:
+        name: 'https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm '
+        state: present
+        disable_gpg_check: True

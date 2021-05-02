@@ -1,0 +1,31 @@
+---
+# Ejecutar: sudo ansible-playbook ubuntu-basic.yml
+# https://fedoramagazine.org/using-ansible-setup-workstation/
+#
+- name: Instalacion Flatpak
+  gather_facts: true
+  connection: local
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Enable Flathub repository
+      become: yes
+      command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo   
+    - name: Install Spotify
+      become: yes
+      command: flatpak install --assumeyes flathub com.spotify.Client     
+    - name: Install Postman
+      become: yes
+      command: flatpak install --assumeyes flathub com.getpostman.Postman 
+    - name: Install Spotify
+      become: yes
+      command: flatpak install --assumeyes flathub us.zoom.Zoom  
+    - name: Install drawio
+      become: yes
+      command: flatpak install --assumeyes flathub com.jgraph.drawio.desktop                               
+    - name: Install com.mattermost.Desktop
+      become: yes
+      command: flatpak install --assumeyes com.mattermost.Desktop  
+    - name: Install com.slack.Slack
+      become: yes
+      command: flatpak install --assumeyes flathub com.slack.Slack  

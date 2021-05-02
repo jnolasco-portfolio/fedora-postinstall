@@ -1,0 +1,80 @@
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
+      include_vars:
+        file: ../vars/application-versions.yaml
+    - name: Instalando diversos
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - java-1.8.0-openjdk.x86_64
+        - java-11-openjdk.x86_64          
+    - name: Add docker repo
+      shell:  'dnf config-manager \
+        --add-repo \
+          https://download.docker.com/linux/fedora/docker-ce.repo'
+    - name: Install Docker
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - docker-ce 
+        - docker-ce-cli 
+        - containerd.io
+    - name: Add user to docker group
+      user:
+        name: '{{ usuario_sistema }}'
+        group: docker      
+    - name: Start docker service
+      systemd:
+        state: restarted
+        name: docker    
+    - name: Install docker-compose
+      get_url: 
+        url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64" 
+        dest: /usr/local/bin/docker-compose 
+        force: no 
+        mode: 0755
+    - name: Install LibVirt
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - libvirt-daemon-kvm 
+        - qemu-kvm
+        - vagrant
+        - vagrant-libvirt
+        - virt-manager        
+    - name: Add user to docker libvirt
+      user:
+        name: '{{ usuario_sistema }}'
+        group: libvirt 
+    - name: Start libvirt service
+      systemd:
+        state: restarted
+        name: libvirtd          
+    - name: 'Instalar driver kvm2'
+      become: true
+      shell: 'curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && sudo install docker-machine-driver-kvm2 /usr/local/bin/'
+    - name: Enable Kubernetes repo
+      yum_repository:
+        name: Kubernetes
+        description: Kubernetes
+        baseurl: 'https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64'
+        gpgkey: 'https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg'
+        gpgcheck: yes
+        repo_gpgcheck: yes
+    - name: Install kubectl
+      dnf:
+        name: kubectl
+        state: present             
+    - name: 'Instalar minikube binary'
+      become: true
+      shell: 'curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && cp minikube /usr/local/bin && rm minikube'
+
+
