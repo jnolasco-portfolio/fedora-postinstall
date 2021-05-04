@@ -33,6 +33,7 @@
         - gparted
         - filezilla
         - git
+        - git-lfs
         - maven
         - vlc
         - youtube-dl 
@@ -58,6 +59,7 @@
         - dnfdragora
         - tuned
         - unar
+        - xrandr
     - name: Instalando códecs y compresores
       dnf:
         name: '{{ item }}'

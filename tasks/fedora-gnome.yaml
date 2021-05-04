@@ -13,6 +13,8 @@
       with_items:
         - gnome-tweak-tool
         - gnome-extensions-app
+        - gnome-shell-extension-appindicator
+        - gnome-shell-extension-appindicator
         - uget
 
 
