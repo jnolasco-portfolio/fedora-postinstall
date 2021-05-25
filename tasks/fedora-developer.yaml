@@ -10,8 +10,18 @@
         state: present
         update_cache: True
       with_items:
-        - java-1.8.0-openjdk.x86_64
-        - java-11-openjdk.x86_64          
+        - java-1.8.0-openjdk
+        - java-1.8.0-openjdk-javadoc-zip
+        - java-11-openjdk
+        - java-11-openjdk-javadoc-zip
+        - gcc-c++ 
+        - make  
+        - nodejs     
+    - name: Install Angular package globally.
+      npm:
+        name: "@angular/cli"
+        global: yes
+        state: present
     - name: Add docker repo
       shell:  'dnf config-manager \
         --add-repo \
@@ -57,10 +67,15 @@
     - name: Start libvirt service
       systemd:
         state: restarted
-        name: libvirtd          
-    - name: 'Instalar driver kvm2'
+        name: libvirtd    
+    - name: Descargar driver kvm2
+      get_url: 
+        url: "https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2" 
+        dest: /tmp/docker-machine-driver-kvm2 
+        force: no            
+    - name: Instalar driver kvm2
       become: true
-      shell: 'curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 -o /tmp/docker-machine-driver-kvm2 && sudo install /tmp/docker-machine-driver-kvm2 /usr/local/bin/'
+      shell: 'install /tmp/docker-machine-driver-kvm2 /usr/local/bin/'
     - name: Enable Kubernetes repo
       yum_repository:
         name: Kubernetes
