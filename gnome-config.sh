@@ -36,9 +36,12 @@ gsettings set org.gnome.desktop.interface monospace-font-name 'Fira Mono 11'
 gsettings set org.gnome.desktop.interface font-name 'Fira Sans Semi-Light 11'
 gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Fira Sans Semi-Bold 11'
 
-
-
 gsettings set org.gnome.desktop.peripherals.mouse natural-scroll false
 gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 
-
+#Usability Improvements
+gsettings set org.gnome.desktop.peripherals.mouse accel-profile 'adaptive'
+gsettings set org.gnome.desktop.sound allow-volume-above-100-percent true
+gsettings set org.gnome.desktop.wm.preferences resize-with-right-button true
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+gsettings set org.gnome.shell.overrides workspaces-only-on-primary false
