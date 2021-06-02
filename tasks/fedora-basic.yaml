@@ -22,10 +22,12 @@
         state: present
         update_cache: True
       with_items:
+        - kernel-devel
         - tilix
         - tilix-nautilus
         - openssh
         - zsh
+        - util-linux-user
         - vim
         - dkms
  #       - mesa-utils
