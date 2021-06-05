@@ -14,6 +14,8 @@
         - gnome-tweak-tool
         - gnome-extensions-app
         - uget
+        - file-roller
+        - file-roller-nautilus
         
 
 
