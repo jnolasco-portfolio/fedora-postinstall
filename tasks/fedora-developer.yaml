@@ -10,6 +10,7 @@
         state: present
         update_cache: True
       with_items:
+        - libnsl
         - java-1.8.0-openjdk
         - java-1.8.0-openjdk-devel
         - java-1.8.0-openjdk-javadoc-zip
