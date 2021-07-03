@@ -60,3 +60,11 @@
       dnf:
         name: VirtualBox-6.1
         state: present
+    - name: Install otro software adicional
+      dnf:
+        name: '{{ item }}'
+        state: present
+        update_cache: True
+      with_items:
+        - gimp
+        - kdenlive       
