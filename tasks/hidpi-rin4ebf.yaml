@@ -10,13 +10,15 @@
         src: ../templates/hidpi-desktop.j2
         dest: "/usr/share/gdm/greeter/autostart/hidpi.desktop"    
         owner: root
-        group: root 
+        group: root
+        mode: u=rwx,g=rx,o=rx 
     - name: Configura Fracctional Scaling en X11 2
       template:
-        src: ../templates/hidpi-desktop-rin4ebf.j2
+        src: ../templates/hidpi-desktop.j2
         dest: "/etc/xdg/autostart/hidpi.desktop"         
         owner: root
-        group: root 
+        group: root
+        mode: u=rwx,g=rx,o=rx 
     - name: Configura Fracctional Scaling en X11 3
       template:
         src: ../templates/hidpi.j2

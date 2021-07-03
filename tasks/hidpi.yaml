@@ -20,9 +20,9 @@
     - name: Configura Fracctional Scaling en X11 3
       template:
         src: ../templates/hidpi.j2
-        dest: "/home/{{ usuario_sistema }}/.config/autostart/hidpi.sh"   
-        owner: jnolasco
-        group: jnolasco
+        dest: "/usr/local/bin/hidpi.sh"   
+        owner: root
+        group: root
         mode: u=rwx,g=rx,o=rx
     - name: Configura Variables de Fracctional Scaling en X11
       template:
