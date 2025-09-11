@@ -1,28 +1,40 @@
 ---
-# Ejecutar: sudo ansible-playbook ubuntu-basic.yml
-# https://fedoramagazine.org/using-ansible-setup-workstation/
-#
-- name: Instalacion Flatpak
-  gather_facts: true
+- name: Install Flatpak applications
+  gather_facts: false
   connection: local
   hosts: localhost
   become: true
   tasks:
     - name: Enable Flathub repository
-      become: yes
-      command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo   
-    - name: Install Spotify
-      become: yes
-      command: flatpak install --assumeyes flathub com.spotify.Client     
-    - name: Install Postman
-      become: yes
-      command: flatpak install --assumeyes flathub com.getpostman.Postman 
-    - name: Install drawio
-      become: yes
-      command: flatpak install --assumeyes flathub us.zoom.Zoom  
-    - name: Install drawio
-      become: yes
-      command: flatpak install --assumeyes flathub com.jgraph.drawio.desktop                               
-    - name: Install com.slack.Slack
-      become: yes
-      command: flatpak install --assumeyes flathub com.slack.Slack  
+      command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+      changed_when: false
+
+    - name: Install Flatpak applications
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - com.brave.Browser
+        - com.discordapp.Discord
+        - com.getpostman.Postman
+        - com.github.d4nj1.tlpui
+        - com.jgraph.drawio.desktop
+        - com.mattjakeman.ExtensionManager
+        - com.slack.Slack
+        - com.spotify.Client
+        - com.stremio.Stremio
+        - com.wireframesketcher.WireframeSketcher
+        - io.beekeeperstudio.Studio
+        - io.github.benini.scid
+        - io.github.debasish_patra_1987.linuxthemestore
+        - io.github.josephmawa.TextCompare
+        - io.gitlab.liferooter.TextPieces
+        - io.httpie.Httpie
+        - io.sourceforge.ChessX
+        - md.obsidian.Obsidian
+        - net.sourceforge.scidvspc.scidvspc
+        - org.gnome.FileRoller
+        - org.gnome.Meld
+        - org.gnome.design.Lorem
+        - org.pgadmin.pgadmin4
+        - page.codeberg.JakobDev.jdDiff

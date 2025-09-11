@@ -19,10 +19,19 @@
         gpgkey: 'https://packages.microsoft.com/keys/microsoft.asc'
         gpgcheck: yes
         
-    - name: Install VS Code
+    - name: Install extra packages
       dnf:
-        name: code
+        name: '{{ item }}'
         state: present
+        update_cache: True
+      with_items:
+        - ImageMagick
+        - solaar
+        - stockfish
+        - pychess
+        - pass
+        - gimp
+        - kdenlive
 
     - name: Enable Teams repo
       yum_repository:
@@ -33,10 +42,6 @@
         gpgkey: 'https://packages.microsoft.com/keys/microsoft.asc'
         gpgcheck: yes
         
-    - name: Install Teams
-      dnf:
-        name: teams
-        state: present
     - name: Enable brave repo
       yum_repository:
         name: brave
@@ -44,10 +49,7 @@
         baseurl: 'https://brave-browser-rpm-release.s3.brave.com/x86_64/'
         gpgkey: 'https://brave-browser-rpm-release.s3.brave.com/brave-core.asc'
         gpgcheck: yes
-    - name: Install Brave browser
-      dnf:
-        name: brave-browser
-        state: present
+
     - name: Import Virtualbox GPG key
       rpm_key:
         state: present
@@ -56,15 +58,3 @@
       shell:  'dnf config-manager \
         --add-repo \
           https://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo'
-    - name: Install Virtualbox
-      dnf:
-        name: VirtualBox-6.1
-        state: present
-    - name: Install otro software adicional
-      dnf:
-        name: '{{ item }}'
-        state: present
-        update_cache: True
-      with_items:
-        - gimp
-        - kdenlive       

@@ -5,19 +5,21 @@
     - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
       include_vars:
         file: ../vars/application-versions.yaml
-    - name: Install all the packages
+    - name: Install gnome packages
       dnf:
         name: '{{ item }}'
         state: present
         update_cache: True
       with_items:
+        - alacarte
+        - file-roller
         - gnome-tweak-tool
         - gnome-extensions-app
         - uget
-        - file-roller
-        - file-roller-nautilus
-        - alacarte
-        
-
-
-
+        - adwaita-gtk2-theme
+    - name: Set dark theme for GTK applications
+      become: true
+      become_user: '{{ usuario_sistema }}'
+      community.general.dconf:
+        key: '/org/gnome/desktop/interface/gtk-theme'
+        value: "'Adwaita-dark'"
