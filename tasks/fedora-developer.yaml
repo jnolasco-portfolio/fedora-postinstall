@@ -6,87 +6,72 @@
         file: ../vars/application-versions.yaml
     - name: Install developer packages
       dnf:
-        name: '{{ item }}'
+        name: "{{ item }}"
         state: present
         update_cache: True
       with_items:
         - libvirt-daemon-kvm
         - qemu-kvm
-        - remmina
         - virt-manager
-        - java-21-openjdk-devel
+        - java-25-openjdk-devel
+        - java-25-openjdk-src
+        - java-21-openjdk-javadoc-zip
         - openjfx
         - helm
         - awscli
-        - kubectl
         - httpie
     - name: Add user to docker libvirt
       user:
-        name: '{{ usuario_sistema }}'
-        group: libvirt 
+        name: "{{ usuario_sistema }}"
+        group: libvirt
     - name: Start libvirt service
       systemd:
         state: restarted
-        name: libvirtd    
+        name: libvirtd
     - name: Descargar driver kvm2
-      get_url: 
+      get_url:
         url: "https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2"
-        dest: /tmp/docker-machine-driver-kvm2 
-        force: no            
+        dest: /tmp/docker-machine-driver-kvm2
+        force: no
     - name: Instalar driver kvm2
       become: true
-      shell: 'install /tmp/docker-machine-driver-kvm2 /usr/local/bin/'
-    - name: Enable Kubernetes repo
+      shell: "install /tmp/docker-machine-driver-kvm2 /usr/local/bin/"
+    - name: Add Kubernetes repository
       yum_repository:
-        name: Kubernetes
+        name: kubernetes
         description: Kubernetes
-        baseurl: 'https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64'
-        gpgkey: 'https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg'
+        baseurl: https://pkgs.k8s.io/core:/stable:/v1.29/rpm/
+        gpgkey: https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key
         gpgcheck: yes
-        repo_gpgcheck: yes
-    - name: 'Instalar minikube binary'
+        enabled: yes
+    - name: Install kubectl
+      dnf:
+        name: kubectl
+        state: present
+    - name: "Instalar minikube binary"
       become: true
-      shell: 'curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && cp minikube /usr/local/bin && rm minikube'
+      shell: "curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && cp minikube /usr/local/bin && rm minikube"
     - name: Install nvm
       become: true
-      become_user: '{{ usuario_sistema }}'
-      shell: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash'
+      become_user: "{{ usuario_sistema }}"
+      shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash"
       args:
-        creates: '~/.nvm/nvm.sh'
+        creates: "~/.nvm/nvm.sh"
     - name: Install latest LTS version of node
       become: true
-      become_user: '{{ usuario_sistema }}'
-      shell: 'source ~/.nvm/nvm.sh && nvm install --lts'
+      become_user: "{{ usuario_sistema }}"
+      shell: "source ~/.nvm/nvm.sh && nvm install --lts"
       args:
-        creates: '~/.nvm/versions/node'
-    - name: Add Rancher Desktop repo
-      yum_repository:
-        name: Rancher Desktop
-        description: Rancher Desktop
-        baseurl: 'https://download.opensuse.org/repositories/isv:/Rancher:/stable/fedora/'
-        gpgcheck: no
-    - name: Install Rancher Desktop
-      dnf:
-        name: rancher-desktop
-        state: present
+        creates: "~/.nvm/versions/node"
+
     - name: Add GitHub CLI repo
       yum_repository:
-        name: GitHub CLI
+        name: github-cli
         description: GitHub CLI
-        baseurl: 'https://cli.github.com/packages/rpm'
-        gpgkey: 'https://cli.github.com/packages/rpm/RPM-GPG-KEY'
+        baseurl: "https://cli.github.com/packages/rpm"
+        gpgkey: "https://cli.github.com/packages/rpm/RPM-GPG-KEY"
         gpgcheck: yes
     - name: Install GitHub CLI
       dnf:
         name: gh
-        state: present
-    - name: Add Lens repo
-      yum_repository:
-        name: Lens
-        description: Lens
-        baseurl: 'https://downloads.k8slens.dev/rpm/'
-        gpgcheck: no
-    - name: Install Lens
-      dnf:
-        name: lens
         state: present

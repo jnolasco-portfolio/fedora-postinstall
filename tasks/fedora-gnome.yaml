@@ -17,6 +17,10 @@
         - gnome-extensions-app
         - uget
         - adwaita-gtk2-theme
+    - name: Install psutil for dconf module
+      dnf:
+        name: python3-psutil
+        state: present
     - name: Set dark theme for GTK applications
       become: true
       become_user: '{{ usuario_sistema }}'

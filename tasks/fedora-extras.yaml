@@ -15,39 +15,25 @@
         name: code
         description: Visual Studio Code
         file: vscode
-        baseurl: 'https://packages.microsoft.com/yumrepos/vscode'
-        gpgkey: 'https://packages.microsoft.com/keys/microsoft.asc'
+        baseurl: "https://packages.microsoft.com/yumrepos/vscode"
+        gpgkey: "https://packages.microsoft.com/keys/microsoft.asc"
         gpgcheck: yes
-        
+
     - name: Install extra packages
       dnf:
-        name: '{{ item }}'
+        name: "{{ item }}"
         state: present
         update_cache: True
       with_items:
-        - ImageMagick
         - solaar
-        - stockfish
-        - pychess
         - pass
-        - gimp
-        - kdenlive
 
-    - name: Enable Teams repo
-      yum_repository:
-        name: ms-teams
-        description: Teams
-        file: ms-teams
-        baseurl: 'https://packages.microsoft.com/yumrepos/ms-teams'
-        gpgkey: 'https://packages.microsoft.com/keys/microsoft.asc'
-        gpgcheck: yes
-        
     - name: Enable brave repo
       yum_repository:
         name: brave
         description: Brave browser
-        baseurl: 'https://brave-browser-rpm-release.s3.brave.com/x86_64/'
-        gpgkey: 'https://brave-browser-rpm-release.s3.brave.com/brave-core.asc'
+        baseurl: "https://brave-browser-rpm-release.s3.brave.com/x86_64/"
+        gpgkey: "https://brave-browser-rpm-release.s3.brave.com/brave-core.asc"
         gpgcheck: yes
 
     - name: Import Virtualbox GPG key
@@ -55,6 +41,7 @@
         state: present
         key: https://www.virtualbox.org/download/oracle_vbox.asc
     - name: Add Virtualbox repo
-      shell:  'dnf config-manager \
-        --add-repo \
-          https://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo'
+      get_url:
+        url: https://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo
+        dest: /etc/yum.repos.d/virtualbox.repo
+        mode: '0644'
