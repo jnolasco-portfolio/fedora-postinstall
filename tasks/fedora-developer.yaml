@@ -15,10 +15,11 @@
         - awscli
         - httpie
         - openjfx
-    - name: Add user to docker libvirt
+    - name: Add user to libvirt and kvm groups
       user:
         name: "{{ usuario_sistema }}"
-        group: libvirt
+        groups: libvirt,kvm
+        append: yes
     - name: Start and enable libvirt service
       systemd:
         state: restarted
