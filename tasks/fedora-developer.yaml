@@ -10,32 +10,20 @@
         state: present
         update_cache: True
       with_items:
-        - libvirt-daemon-kvm
-        - qemu-kvm
-        - virt-manager
-        - java-25-openjdk-devel
-        - java-25-openjdk-src
-        - java-21-openjdk-javadoc-zip
-        - openjfx
+        - "@virtualization"
         - helm
         - awscli
         - httpie
+        - openjfx
     - name: Add user to docker libvirt
       user:
         name: "{{ usuario_sistema }}"
         group: libvirt
-    - name: Start libvirt service
+    - name: Start and enable libvirt service
       systemd:
         state: restarted
         name: libvirtd
-    - name: Descargar driver kvm2
-      get_url:
-        url: "https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2"
-        dest: /tmp/docker-machine-driver-kvm2
-        force: no
-    - name: Instalar driver kvm2
-      become: true
-      shell: "install /tmp/docker-machine-driver-kvm2 /usr/local/bin/"
+        enabled: yes
     - name: Add Kubernetes repository
       yum_repository:
         name: kubernetes
@@ -75,3 +63,17 @@
       dnf:
         name: gh
         state: present
+
+    - name: Install sdkman
+      become: true
+      become_user: "{{ usuario_sistema }}"
+      shell: 'curl -s "https://get.sdkman.io" | bash'
+      args:
+        creates: "~/.sdkman/bin/sdkman-init.sh"
+
+    - name: Install Java, Maven, and Gradle with sdkman
+      become: true
+      become_user: "{{ usuario_sistema }}"
+      shell: "source ~/.sdkman/bin/sdkman-init.sh && sdk install java && sdk install maven && sdk install gradle"
+      args:
+        creates: "~/.sdkman/candidates/java/current"

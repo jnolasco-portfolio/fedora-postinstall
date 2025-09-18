@@ -27,7 +27,6 @@
         - zsh
         - curl
         - git
-        - maven
         - net-tools
         - google-roboto-*
         - 'mozilla-fira*'
