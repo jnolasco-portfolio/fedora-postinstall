@@ -63,6 +63,7 @@ This guide provides instructions for installing Fedora, including a dual-boot se
 For users dedicating a large amount of space to Fedora (e.g., 1.5TB), here is a recommended layout that is simple, flexible, and leverages the power of the Btrfs filesystem:
 
 *   **/boot/efi**: `1 GB` (FAT32) - Essential for UEFI booting.
+    > **Note:** This `1 GB` recommendation is the best practice for a new installation on a clean drive. If you are installing Fedora alongside an existing Windows installation, it is much safer to use the existing EFI partition created by Windows (even if it's smaller) rather than attempting to resize it.
 *   **/boot**: `2 GB` (ext4) - For kernels and boot files.
 *   **Btrfs Volume**: The rest of the space (e.g., ~1.497 TB) mounted at `/`.
 
@@ -93,7 +94,48 @@ The Fedora installer will automatically create `root` and `home` subvolumes with
   sudo dnf update
   ```
 
+### 1.9. Troubleshooting: Fedora Boot Option is Missing
+
+After installation, if your computer boots directly into Windows and there is no "Fedora" option in your BIOS/UEFI boot menu, it means the installer failed to create a boot entry. You can create it manually.
+
+**Method 1: Create a UEFI Entry with `efibootmgr`**
+
+1.  **Boot from your Fedora Live USB.**
+2.  **Find your EFI Partition**: Open a terminal and run `sudo fdisk -l`. Look for the small partition (100MB - 1GB) with the type `EFI System`. Note its device name (e.g., `/dev/sda1` or `/dev/nvme0n1p1`).
+3.  **Create the Boot Entry**: Use the following command, replacing the disk and partition number with the values you found.
+
+    *   If your partition is `/dev/sda1`, use `--disk /dev/sda --part 1`.
+    *   If your partition is `/dev/nvme0n1p1`, use `--disk /dev/nvme0n1 --part 1`.
+
+    ```sh
+    # Example for /dev/nvme0n1p1
+    sudo efibootmgr --create --disk /dev/nvme0n1 --part 1 --label "Fedora" --loader \\EFI\\fedora\\shimx64.efi
+    ```
+4.  **Verify**: Run `sudo efibootmgr` to confirm the "Fedora" entry now exists and is at the top of the `BootOrder`.
+5.  **Reboot** your computer without the USB drive.
+
+**Method 2: The "Copy/Rename" Trick for Stubborn Firmware**
+
+If Method 1 doesn't work (the entry doesn't save or is ignored), your firmware may be hardcoded to only boot Windows. This workaround tricks it.
+
+1.  **Boot from the Fedora Live USB and mount your EFI partition**:
+    ```sh
+    # Replace /dev/sdXN with your actual EFI partition
+    sudo mount /dev/sdXN /mnt 
+    ```
+2.  **Back up the Windows bootloader (CRITICAL!)**:
+    ```sh
+    sudo mv /mnt/EFI/Microsoft/Boot/bootmgfw.efi /mnt/EFI/Microsoft/Boot/bootmgfw.efi.bak
+    ```
+3.  **Copy Fedora's bootloader into its place**:
+    ```sh
+    sudo cp /mnt/EFI/fedora/shimx64.efi /mnt/EFI/Microsoft/Boot/bootmgfw.efi
+    ```
+4.  **Unmount and Reboot**. Your computer should now load GRUB.
+    > **Note**: After booting into Fedora, you may need to run `sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg` to fix the Windows entry in the GRUB menu.
+
 ## 2. Automated Post-Installation Setup
+
 
 This repository uses Ansible to automate the setup process.
 
