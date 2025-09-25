@@ -72,12 +72,19 @@
       args:
         creates: "~/.sdkman/candidates/gradle/current"
 
+    - name: Remove old GitHub CLI repository file if it exists
+      ansible.builtin.file:
+        path: /etc/yum.repos.d/github-cli.repo
+        state: absent
+
     - name: Add GitHub CLI repository
-      shell: "dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo"
-      args:
-        creates: /etc/yum.repos.d/gh-cli.repo
+      ansible.builtin.yum_repository:
+        name: "gh-cli"
+        description: "GitHub CLI"
+        baseurl: "https://cli.github.com/packages/rpm"
+        gpgkey: "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9623335A7542187235564B528995BF449F85C3"
+        gpgcheck: yes
 
     - name: Install GitHub CLI
-      dnf:
+      ansible.builtin.dnf:
         name: gh
-        creates: "~/.sdkman/candidates/java/current"

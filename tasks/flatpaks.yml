@@ -6,8 +6,10 @@
   become: true
   tasks:
     - name: Enable Flathub repository
-      command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-      changed_when: false
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
 
     - name: Install Flatpak applications
       community.general.flatpak:

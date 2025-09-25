@@ -4,9 +4,6 @@
     - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
       include_vars:
         file: ../vars/application-versions.yaml
-    - name: Enable Flathub repository
-      become: yes
-      command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - name: Import RPM Fusion GPG keys
       become: yes
       rpm_key:
