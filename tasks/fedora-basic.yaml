@@ -7,18 +7,25 @@
     - name: Enable Flathub repository
       become: yes
       command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    - name: Import RPM Fusion GPG keys
+      become: yes
+      rpm_key:
+        state: present
+        key: "https://rpmfusion.org/keys?action=AttachFile&do=get&target={{ item }}"
+      with_items:
+        - RPM-GPG-KEY-rpmfusion-free-fedora-{{ fedora_current }}
+        - RPM-GPG-KEY-rpmfusion-nonfree-fedora-{{ fedora_current }}
     - name: install the rpmfusion repo packages
       become: yes
-      dnf:      
+      dnf:
         name: "{{ item }}"
         state: present
-        disable_gpg_check: True
       with_items:
         - http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_current }}.noarch.rpm
-        - http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_current }}.noarch.rpm  
+        - http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_current }}.noarch.rpm
     - name: Install basic packages
       dnf:
-        name: '{{ item }}'
+        name: "{{ item }}"
         state: present
         update_cache: True
         allowerasing: yes
@@ -29,7 +36,7 @@
         - git
         - net-tools
         - google-roboto-*
-        - 'mozilla-fira*'
+        - "mozilla-fira*"
         - adobe-source-code-pro-fonts
         - fontconfig
         - htop
@@ -62,33 +69,39 @@
         - xorg-x11-font-utils
     - name: Install Oh My Zsh
       become: true
-      become_user: '{{ usuario_sistema }}'
+      become_user: "{{ usuario_sistema }}"
       shell: 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
       args:
-        creates: '~/.oh-my-zsh'
+        creates: "~/.oh-my-zsh"
+    - name: Change shell for user to zsh
+      become: true
+      user:
+        name: "{{ usuario_sistema }}"
+        shell: /bin/zsh
+
     - name: Install zsh-autosuggestions plugin
       become: true
-      become_user: '{{ usuario_sistema }}'
+      become_user: "{{ usuario_sistema }}"
       ansible.builtin.git:
-        repo: 'https://github.com/zsh-users/zsh-autosuggestions'
-        dest: '~/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+        repo: "https://github.com/zsh-users/zsh-autosuggestions"
+        dest: "~/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
         version: master
         force: yes
     - name: Install zsh-syntax-highlighting plugin
       become: true
-      become_user: '{{ usuario_sistema }}'
+      become_user: "{{ usuario_sistema }}"
       ansible.builtin.git:
-        repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git'
-        dest: '~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting'
+        repo: "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+        dest: "~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
         version: master
         force: yes
     - name: Enable Oh My Zsh plugins
       become: true
-      become_user: '{{ usuario_sistema }}'
+      become_user: "{{ usuario_sistema }}"
       ansible.builtin.lineinfile:
-        path: '~/.zshrc'
+        path: "~/.zshrc"
         regexp: '^plugins=\('
-        line: 'plugins=(git zsh-autosuggestions docker docker-compose kubectl kube-ps1 mvn gradle ufw zsh-syntax-highlighting helm dnf gh httpie ng npm node nvm gitignore)'
+        line: "plugins=(git zsh-autosuggestions docker docker-compose kubectl kube-ps1 mvn gradle ufw zsh-syntax-highlighting helm dnf gh httpie ng npm node nvm gitignore)"
         backup: yes
     - name: Poner archivo 95-custom-sysctl.conf para kernel tunning
       template:

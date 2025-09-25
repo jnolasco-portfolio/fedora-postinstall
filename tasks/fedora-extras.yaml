@@ -36,12 +36,3 @@
         gpgkey: "https://brave-browser-rpm-release.s3.brave.com/brave-core.asc"
         gpgcheck: yes
 
-    - name: Import Virtualbox GPG key
-      rpm_key:
-        state: present
-        key: https://www.virtualbox.org/download/oracle_vbox.asc
-    - name: Add Virtualbox repo
-      get_url:
-        url: https://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo
-        dest: /etc/yum.repos.d/virtualbox.repo
-        mode: '0644'

@@ -14,7 +14,6 @@
         name: "{{ item }}"
         state: present
       with_items:
-        - com.brave.Browser
         - com.discordapp.Discord
         - com.getpostman.Postman
         - com.github.d4nj1.tlpui
@@ -29,7 +28,6 @@
         - io.httpie.Httpie
         - md.obsidian.Obsidian
         - org.gnome.FileRoller
-        - org.gnome.Meld
         - org.gnome.design.Lorem
         - org.pgadmin.pgadmin4
         - page.codeberg.JakobDev.jdDiff

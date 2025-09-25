@@ -22,10 +22,10 @@
         append: yes
     - name: Start and enable libvirt service
       systemd:
-        state: restarted
+        state: started
         name: libvirtd
         enabled: yes
-    - name: Add Kubernetes repository
+    - name: Add Kubernetes repository for kubectl
       yum_repository:
         name: kubernetes
         description: Kubernetes
@@ -37,9 +37,11 @@
       dnf:
         name: kubectl
         state: present
-    - name: "Instalar minikube binary"
-      become: true
-      shell: "curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && cp minikube /usr/local/bin && rm minikube"
+    - name: "Download minikube binary"
+      ansible.builtin.get_url:
+        url: "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
+        dest: "/usr/local/bin/minikube"
+        mode: "0755"
     - name: Install nvm
       become: true
       become_user: "{{ usuario_sistema }}"
@@ -53,18 +55,6 @@
       args:
         creates: "~/.nvm/versions/node"
 
-    - name: Add GitHub CLI repo
-      yum_repository:
-        name: github-cli
-        description: GitHub CLI
-        baseurl: "https://cli.github.com/packages/rpm"
-        gpgkey: "https://cli.github.com/packages/rpm/RPM-GPG-KEY"
-        gpgcheck: yes
-    - name: Install GitHub CLI
-      dnf:
-        name: gh
-        state: present
-
     - name: Install sdkman
       become: true
       become_user: "{{ usuario_sistema }}"
@@ -72,9 +62,33 @@
       args:
         creates: "~/.sdkman/bin/sdkman-init.sh"
 
-    - name: Install Java, Maven, and Gradle with sdkman
+    - name: Install latest Java with sdkman
       become: true
       become_user: "{{ usuario_sistema }}"
-      shell: "source ~/.sdkman/bin/sdkman-init.sh && sdk install java && sdk install maven && sdk install gradle"
+      shell: "source ~/.sdkman/bin/sdkman-init.sh && sdk install java"
       args:
+        creates: "~/.sdkman/candidates/java/current"
+
+    - name: Install latest Maven with sdkman
+      become: true
+      become_user: "{{ usuario_sistema }}"
+      shell: "source ~/.sdkman/bin/sdkman-init.sh && sdk install maven"
+      args:
+        creates: "~/.sdkman/candidates/maven/current"
+
+    - name: Install latest Gradle with sdkman
+      become: true
+      become_user: "{{ usuario_sistema }}"
+      shell: "source ~/.sdkman/bin/sdkman-init.sh && sdk install gradle"
+      args:
+        creates: "~/.sdkman/candidates/gradle/current"
+
+    - name: Add GitHub CLI repository
+      shell: "dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo"
+      args:
+        creates: /etc/yum.repos.d/gh-cli.repo
+
+    - name: Install GitHub CLI
+      dnf:
+        name: gh
         creates: "~/.sdkman/candidates/java/current"

@@ -5,28 +5,6 @@
   tasks:
     - name: Install Ollama
       become: true
-      shell: 'curl -fsSL https://ollama.com/install.sh | sh'
+      shell: "curl -fsSL https://ollama.com/install.sh | sh"
       args:
-        creates: '/usr/local/bin/ollama'
-    - name: Create ollama user and group
-      ansible.builtin.user:
-        name: ollama
-        state: present
-        system: yes
-        create_home: no
-        shell: /bin/false
-    - name: Copy ollama.service systemd unit file
-      ansible.builtin.template:
-        src: ../templates/ollama.service.j2
-        dest: /etc/systemd/system/ollama.service
-        owner: root
-        group: ollama
-        mode: '0644'
-    - name: Reload systemd daemon
-      ansible.builtin.systemd:
-        daemon_reload: yes
-    - name: Enable and start Ollama service
-      ansible.builtin.systemd:
-        name: ollama.service
-        state: started
-        enabled: yes
+        creates: "/usr/local/bin/ollama"
