@@ -10,21 +10,10 @@
         state: present
         update_cache: True
       with_items:
-        - "@virtualization"
         - helm
         - awscli
         - httpie
         - openjfx
-    - name: Add user to libvirt and kvm groups
-      user:
-        name: "{{ usuario_sistema }}"
-        groups: libvirt,kvm
-        append: yes
-    - name: Start and enable libvirt service
-      systemd:
-        state: started
-        name: libvirtd
-        enabled: yes
     - name: Add Kubernetes repository for kubectl
       yum_repository:
         name: kubernetes
