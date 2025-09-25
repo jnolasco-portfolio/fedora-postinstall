@@ -7,7 +7,7 @@
         file: ../vars/application-versions.yaml
     - name: Install gnome packages
       dnf:
-        name: '{{ item }}'
+        name: "{{ item }}"
         state: present
         update_cache: True
       with_items:
@@ -21,9 +21,26 @@
       dnf:
         name: python3-psutil
         state: present
+    - name: Install Microsoft Core Fonts
+      dnf:
+        name: https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
+        state: present
+        disable_gpg_check: True
     - name: Set dark theme for GTK applications
       become: true
-      become_user: '{{ usuario_sistema }}'
+      become_user: "{{ usuario_sistema }}"
       community.general.dconf:
-        key: '/org/gnome/desktop/interface/gtk-theme'
+        key: "/org/gnome/desktop/interface/gtk-theme"
         value: "'Adwaita-dark'"
+    - name: Set dark theme for legacy (GTK2) applications
+      become: true
+      become_user: "{{ usuario_sistema }}"
+      community.general.dconf:
+        key: "/org/gnome/settings-daemon/plugins/xsettings/overrides"
+        value: "{'Gtk/ThemeName': <'Adwaita-dark'>}"
+    - name: Set color scheme to prefer-dark for modern applications
+      become: true
+      become_user: "{{ usuario_sistema }}"
+      community.general.dconf:
+        key: "/org/gnome/desktop/interface/color-scheme"
+        value: "'prefer-dark'"

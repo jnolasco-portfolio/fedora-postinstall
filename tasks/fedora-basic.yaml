@@ -103,17 +103,3 @@
         regexp: '^plugins=\('
         line: "plugins=(git zsh-autosuggestions docker docker-compose kubectl kube-ps1 mvn gradle ufw zsh-syntax-highlighting helm dnf gh httpie ng npm node nvm gitignore)"
         backup: yes
-    - name: Poner archivo 95-custom-sysctl.conf para kernel tunning
-      template:
-        src: ../templates/95-sysctl.conf.j2
-        dest: "/etc/sysctl.d/95-custom-sysctl.conf"
-        owner: root
-        group: root
-    - name: Cargar valores de /etc/sysctl.d/95-custom-sysctl.conf
-      become: true
-      shell: "sysctl -p"
-    - name: Install Microsoft Core Fonts
-      dnf:
-        name: https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
-        state: present
-        disable_gpg_check: True
