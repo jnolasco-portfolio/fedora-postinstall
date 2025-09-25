@@ -1,0 +1,47 @@
+---
+- name: Install and Configure KVM
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Include user variables
+      include_vars:
+        file: ../vars/application-versions.yaml
+
+    - name: Install virtualization packages
+      dnf:
+        name: "@virtualization"
+        state: present
+
+    - name: Add user to libvirt and kvm groups
+      user:
+        name: "{{ usuario_sistema }}"
+        groups: libvirt,kvm
+        append: yes
+
+    - name: Enable and start all modular libvirt daemon sockets
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      with_items:
+        - virtinterfaced.socket
+        - virtnetworkd.socket
+        - virtnodedevd.socket
+        - virtnwfilterd.socket
+        - virtqemud.socket
+        - virtsecretd.socket
+        - virtstoraged.socket
+
+    - name: Start and autostart the default libvirt network
+      community.libvirt.virt_net:
+        name: default
+        state: active
+        autostart: yes
+
+    - name: Download latest VirtIO drivers for Windows guests
+      ansible.builtin.get_url:
+        url: "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso"
+        dest: "/var/lib/libvirt/boot/virtio-win.iso"
+        mode: "0644"
+      # This directory is usually created by libvirt, but we ensure it exists.
+      # The get_url module does not create parent directories.
