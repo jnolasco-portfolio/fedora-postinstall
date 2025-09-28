@@ -26,11 +26,15 @@
       dnf:
         name: kubectl
         state: present
-    - name: "Download minikube binary"
-      ansible.builtin.get_url:
-        url: "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
-        dest: "/usr/local/bin/minikube"
-        mode: "0755"
+    - name: "Remove manually installed minikube binary if it exists"
+      ansible.builtin.file:
+        path: /usr/local/bin/minikube
+        state: absent # Clean up old binary-based installation
+    - name: "Install minikube from the latest official RPM"
+      ansible.builtin.dnf:
+        name: "https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm"
+        state: present
+        disable_gpg_check: true # The RPM is not signed
     - name: Install nvm
       become: true
       become_user: "{{ usuario_sistema }}"
