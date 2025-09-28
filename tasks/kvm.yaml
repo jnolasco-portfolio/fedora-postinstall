@@ -39,10 +39,13 @@
         state: active
         autostart: yes
 
-    - name: Download latest VirtIO drivers for Windows guests
+    - name: Add VirtIO drivers repository for Windows guests
       ansible.builtin.get_url:
-        url: "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso"
-        dest: "/var/lib/libvirt/boot/virtio-win.iso"
+        url: "https://fedorapeople.org/groups/virt/virtio-win/virtio-win.repo"
+        dest: "/etc/yum.repos.d/virtio-win.repo"
         mode: "0644"
-      # This directory is usually created by libvirt, but we ensure it exists.
-      # The get_url module does not create parent directories.
+
+    - name: Install VirtIO drivers for Windows guests
+      ansible.builtin.dnf:
+        name: virtio-win
+        state: present
